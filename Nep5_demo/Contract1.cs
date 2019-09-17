@@ -16,9 +16,9 @@ namespace Nep5_demo
 
         public static string symbol() => "CCNC";
 
-        private static readonly byte[] admin = Neo.SmartContract.Framework.Helper.ToScriptHash("123");
+        private static readonly byte[] admin = Neo.SmartContract.Framework.Helper.ToScriptHash("AQzRMe3zyGS8W177xLJfewRRQZY2kddMun");
 
-        private static readonly byte[] CCMC = Neo.SmartContract.Framework.Helper.ToScriptHash("234");
+        private static readonly byte[] CCMC = Neo.SmartContract.Framework.Helper.ToScriptHash("AKHMLkVGtSkQo5F7X9cwwg33918c7d2GHY");
 
         private const ulong factor = 100000000;
 
@@ -36,7 +36,7 @@ namespace Nep5_demo
                 return true;
             }
             else if (Runtime.Trigger == TriggerType.Application)
-            {
+            {                
                 var callingScript = ExecutionEngine.CallingScriptHash;
                 if (operation == "name")
                 {
@@ -56,12 +56,16 @@ namespace Nep5_demo
                 }
                 else if (operation == "deploy")
                 {
-                    if (!Runtime.CheckWitness(admin)) return false;
+                    //if (!Runtime.CheckWitness(admin)) return false;
                     byte[] IsDeployed = Storage.Get("IsDeployed");
                     if (IsDeployed.Length != 0) return false;
                     Storage.Put("IsDeployed", 1);
                     Storage.Put(admin, totalCoin);
-                    Transferred(null, admin, totalCoin);
+                    return admin;
+                }
+                else if (operation == "showByte")
+                {
+                    return (byte[])args[0];
                 }
                 else if (operation == "balanceOf")
                 {
@@ -69,6 +73,18 @@ namespace Nep5_demo
                     byte[] who = (byte[])args[0];
                     if (who.Length != 20) return false;
                     return Storage.Get(who).AsBigInteger();
+                }
+                else if (operation == "balanceOfAdmin")
+                {
+                    var number = Storage.Get(admin);
+                    if (number == null)
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return number;
+                    }                   
                 }
                 else if (operation == "transfer")
                 {
@@ -89,8 +105,7 @@ namespace Nep5_demo
                         string Function = (string)args[4];
                         object[] parameters = new object[args.Length - 3];
                         args.CopyTo(parameters, 3);
-                        object[] Args = new object[] { ToChainID, ContractAddress, Function, parameters };
-                        crossChainTransfer("createCrossChainTx", parameters);
+                        crossChainTransfer("CreateCrossChainTx", parameters);
                     }
                     else
                     {
@@ -100,14 +115,12 @@ namespace Nep5_demo
                 }
                 else if (operation == "ProcessCrossChainTransfer")
                 {
-                    byte[] from = (byte[])args[0];
-                    byte[] to = (byte[])args[1];
-                    BigInteger value = (BigInteger)args[2];
-                    if (callingScript != CCMC || from != CCMC) return false;
-                    transfer(from, to, value);
+                    byte[] to = (byte[])args[0];
+                    BigInteger value = (BigInteger)args[1];
+                    //if (callingScript != CCMC || from != CCMC) return false;
+                    transfer(CCMC, to, value);
                     return true;
                 }
-
             }
             return false;
         }
@@ -117,24 +130,15 @@ namespace Nep5_demo
             if (value < 0 || from.Length != 20 || to.Length != 20) return false;
             if (value == 0 || from == to) return true;
             // from part
-            BigInteger from_value = Storage.Get(from).AsBigInteger();
-            if (from_value.IsZero || from_value < value) return false;
-            if (from_value == value)
-            {
-                Storage.Delete(from);
-            }
-            else
-            {
-                Storage.Put(from, from_value - value);
-            }
-            //to part
-            BigInteger to_value = Storage.Get(to).AsBigInteger();
-            Storage.Put(to, to_value + value);
+            var from_value = Storage.Get(from).AsBigInteger();
+            Storage.Put(from, from_value - value);
+            var to_value = Storage.Get(to).AsBigInteger();
+            Storage.Put(to, value+to_value);
             Transferred(from, to, value);
             return true;
         }
 
-        [Appcall("77e193f1af44a61ed3613e6e3442a0fc809bb4b8")]
+        [Appcall("557ecfacb04b79566d573ee8e4928153db8e7b26")]
         static extern object crossChainTransfer(string operation, params object[] args);
     }
 }
