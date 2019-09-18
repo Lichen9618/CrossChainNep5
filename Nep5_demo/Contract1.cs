@@ -18,7 +18,7 @@ namespace Nep5_demo
 
         private static readonly byte[] admin = Neo.SmartContract.Framework.Helper.ToScriptHash("AQzRMe3zyGS8W177xLJfewRRQZY2kddMun");
 
-        private static readonly byte[] CCMC = Neo.SmartContract.Framework.Helper.ToScriptHash("AKHMLkVGtSkQo5F7X9cwwg33918c7d2GHY");
+        private static readonly byte[] CCMC = Neo.SmartContract.Framework.Helper.ToScriptHash("Aeh6Xf79fwQLmToZA2HAuoJSih9GHz5eQT");
 
         private const ulong factor = 100000000;
 
@@ -100,11 +100,17 @@ namespace Nep5_demo
                     BigInteger value = (BigInteger)args[1];
                     if (transfer(from, CCMC, value))
                     {
-                        UInt64 ToChainID = (UInt64)args[2];
+                        long ToChainID = (long)args[2];
                         byte[] ContractAddress = (byte[])args[3];
                         string Function = (string)args[4];
-                        object[] parameters = new object[args.Length - 3];
-                        args.CopyTo(parameters, 3);
+                        byte[] paraBytes = (byte[])args[5];
+                        object[] parameters = new object[] 
+                        {
+                            ToChainID,
+                            ContractAddress,
+                            Function,
+                            paraBytes
+                        };
                         crossChainTransfer("CreateCrossChainTx", parameters);
                     }
                     else
@@ -138,7 +144,7 @@ namespace Nep5_demo
             return true;
         }
 
-        [Appcall("557ecfacb04b79566d573ee8e4928153db8e7b26")]
+        [Appcall("97c581791005e0df58eab84a4f79f4050e9163fb")]
         static extern object crossChainTransfer(string operation, params object[] args);
     }
 }
