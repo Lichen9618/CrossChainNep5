@@ -16,9 +16,9 @@ namespace Nep5_demo
 
         public static string symbol() => "CCNC";
 
-        private static readonly byte[] admin = Neo.SmartContract.Framework.Helper.ToScriptHash("AQzRMe3zyGS8W177xLJfewRRQZY2kddMun");
+        private static readonly byte[] admin = Neo.SmartContract.Framework.Helper.ToScriptHash("AZZzYNez2oY2VEfqRP8i8rq2d4jduCzxnh");
 
-        private static readonly byte[] CCMC = Neo.SmartContract.Framework.Helper.ToScriptHash("Aeh6Xf79fwQLmToZA2HAuoJSih9GHz5eQT");
+        private static readonly byte[] CCMC = Neo.SmartContract.Framework.Helper.ToScriptHash("AcX2YPQJiX5a2T7pUTYUdHmsu8US3Wh1KK");
 
         private const ulong factor = 100000000;
 
@@ -144,7 +144,7 @@ namespace Nep5_demo
             return true;
         }
 
-        [Appcall("97c581791005e0df58eab84a4f79f4050e9163fb")]
+        [Appcall("13f2d25c31fa3dcaec56aba3b1c20c9dafd38be3")]
         static extern object crossChainTransfer(string operation, params object[] args);
     }
 }
