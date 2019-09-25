@@ -109,7 +109,10 @@ namespace Nep5_demo
                 }
                 else if (operation == "ProcessCrossChainTransfer")
                 {
-                    return ProcessCrossChainTransaction((byte[])args[0]);
+                    Map<string, object> items = (Map<string, object>)ProcessCrossChainTransaction((byte[])args[0]);
+                    Runtime.Notify((byte[])items["address"]);
+                    Runtime.Notify((BigInteger)items["amount"]);
+                    return transfer(CCMC, (byte[])items["address"], (BigInteger)items["amount"]);                   
                 }
             }
             return false;
@@ -168,6 +171,6 @@ namespace Nep5_demo
         static extern object crossChainTransfer(string operation, params object[] args);
 
         [Syscall("Neo.CrossChain.ProcessCrossChainTransaction")]
-        public static extern bool ProcessCrossChainTransaction(byte[] args);
+        public static extern object ProcessCrossChainTransaction(byte[] args);
     }
 }
