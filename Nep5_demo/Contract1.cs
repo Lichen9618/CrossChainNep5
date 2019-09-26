@@ -80,7 +80,7 @@ namespace Nep5_demo
                     BigInteger value = (BigInteger)args[2];
                     return transfer(from, to, value);
                 }
-                else if (operation == "CreateCrossChainTransfer")
+                else if (operation == "cross")
                 {
                     byte[] from = (byte[])args[0];
                     BigInteger value = (BigInteger)args[1];
@@ -107,11 +107,9 @@ namespace Nep5_demo
                     }
                     return true;
                 }
-                else if (operation == "ProcessCrossChainTransfer")
+                else if (operation == "crossback")
                 {
                     Map<string, object> items = (Map<string, object>)ProcessCrossChainTransaction((byte[])args[0]);
-                    Runtime.Notify((byte[])items["address"]);
-                    Runtime.Notify((BigInteger)items["amount"]);
                     return transfer(CCMC, (byte[])items["address"], (BigInteger)items["amount"]);                   
                 }
             }
@@ -143,10 +141,10 @@ namespace Nep5_demo
         }
 
         [DisplayName("name")]
-        public static string Name() => "Nep5_demo"; //name of the token
+        public static string Name() => "NEOX"; //name of the token
 
         [DisplayName("symbol")]
-        public static string Symbol() => "CCNC"; //symbol of the token
+        public static string Symbol() => "NEOX"; //symbol of the token
 
         [DisplayName("transfer")]
         private static bool transfer(byte[] from, byte[] to, BigInteger value)
